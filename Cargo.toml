@@ -1,0 +1,7 @@
+[package]
+name = "jkm_map_inspector"
+version = "0.1.0"
+authors = ["Jakob Meier <jakobmeier@bluewin.ch>"]
+
+[dependencies]
+piston_window = "0.41.0"
