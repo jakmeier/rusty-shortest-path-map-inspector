@@ -51,6 +51,8 @@ fn main() {
 	
 	let mut max_x = 1.0;
 	let mut max_y = 1.0;
+	let mut min_x = 0.0;
+	let mut min_y = 0.0;
 	
 	let mut graph = Vec::new();
 	let mut obstacles = Vec::new();
@@ -92,7 +94,9 @@ fn main() {
 						else { println!("File corrupted: No cost given for node{}. Displaying -1.0 for it.", graph.len()); -1.0 };
 							
 			if x > max_x {max_x = x;}
+			if x < min_x {min_x = x;}
 			if y > max_y {max_y = y;}
+			if y < min_y {min_y = y;}
 			graph.push( GraphNode{neighbours: [north, east, south, west], x:x, y:y, shortest_path: shortest_path, cost: cost} );
 		}
 		else {
@@ -122,7 +126,9 @@ fn main() {
 					else if let Ok(h) = words[1].parse::<i64>(){h as f64}
 					else { println!("File corrupted: No height for obstacle."); error(); return; };
 			
+			if x < min_x {min_x = x;}
 			if x+w > max_x {max_x = x+w;}
+			if y < min_y {min_y = y;}
 			if y+h > max_y {max_y = y+h;}
 			obstacles.push( (x,y,w,h) );
 		
@@ -144,8 +150,8 @@ fn main() {
 			51 ... 100 => 2.0,
 			_ => 1.0
 		};
-	let dx:f64 = WIDTH as f64 / max_x;
-	let dy:f64 = HEIGHT as f64 / max_y;
+	let dx:f64 = WIDTH as f64 / (max_x - min_x);
+	let dy:f64 = HEIGHT as f64 / (max_y - min_y);
 	
 	let mut window: PistonWindow = 
 	WindowSettings::new("Inspector", [WIDTH, HEIGHT])
@@ -161,6 +167,8 @@ fn main() {
 			
 			//draw obstacles
 			for &(x,y,w,h) in obstacles.iter() {
+			    let x = x - min_x;
+				let y = y - min_y;
 				rectangle(obstacle_color, [x*dx,y*dy,w*dx,h*dy], c.transform, g);
 			}
 			
@@ -168,19 +176,19 @@ fn main() {
 			for node in graph.iter() {
 				for d in 0..4 {
 					if let Some(neighbour) = node.neighbours[d] {
-						line(line_color, scale*3.0, [node.x*dx, node.y*dy, graph[neighbour].x*dx, graph[neighbour].y*dy ], c.transform, g);
+						line(line_color, scale*3.0, [(node.x - min_x)*dx, (node.y - min_y)*dy, (graph[neighbour].x - min_x)*dx, (graph[neighbour].y - min_y)*dy ], c.transform, g);
 					}
 				}		
 			}
 			//draw nodes and shortest paths
 			for node in graph.iter() {
-				ellipse(node_color, [node.x*dx - scale*10.0, node.y*dy-scale*10.0, scale*20.0, scale*20.0], c.transform, g);
+				ellipse(node_color, [(node.x - min_x)*dx - scale*10.0, (node.y - min_y)*dy-scale*10.0, scale*20.0, scale*20.0], c.transform, g);
 				match node.shortest_path {
-					Some(0) => ellipse(shortest_path_color, [node.x*dx - scale*4.0, node.y*dy - scale*18.0, scale*8.0, scale*8.0], c.transform, g),
-					Some(1) => ellipse(shortest_path_color, [node.x*dx + scale*10.0, node.y*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g),
-					Some(2) => ellipse(shortest_path_color, [node.x*dx - scale*4.0, node.y*dy + scale*10.0, scale*8.0, scale*8.0], c.transform, g),
-					Some(3) => ellipse(shortest_path_color, [node.x*dx - scale*18.0, node.y*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g),
-					_ => ellipse(shortest_path_color, [node.x*dx - scale*4.0, node.y*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g)
+					Some(0) => ellipse(shortest_path_color, [(node.x - min_x)*dx - scale*4.0, (node.y - min_y)*dy - scale*18.0, scale*8.0, scale*8.0], c.transform, g),
+					Some(1) => ellipse(shortest_path_color, [(node.x - min_x)*dx + scale*10.0, (node.y - min_y)*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g),
+					Some(2) => ellipse(shortest_path_color, [(node.x - min_x)*dx - scale*4.0, (node.y - min_y)*dy + scale*10.0, scale*8.0, scale*8.0], c.transform, g),
+					Some(3) => ellipse(shortest_path_color, [(node.x - min_x)*dx - scale*18.0, (node.y - min_y)*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g),
+					_ => ellipse(shortest_path_color, [(node.x - min_x)*dx - scale*4.0, (node.y - min_y)*dy - scale*4.0, scale*8.0, scale*8.0], c.transform, g)
 				}
 			}
 		});
