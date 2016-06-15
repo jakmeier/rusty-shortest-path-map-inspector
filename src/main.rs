@@ -93,10 +93,10 @@ fn main() {
 						else if let Ok(cost) = words[7].parse::<i64>(){cost as f64}
 						else { println!("File corrupted: No cost given for node{}. Displaying -1.0 for it.", graph.len()); -1.0 };
 							
-			if x > max_x {max_x = x;}
-			if x < min_x {min_x = x;}
-			if y > max_y {max_y = y;}
-			if y < min_y {min_y = y;}
+			if x > max_x && x < std::f64::INFINITY {max_x = x;}
+			if x < min_x && x > std::f64::NEG_INFINITY {min_x = x;}
+			if y > max_y && y < std::f64::INFINITY {max_y = y;}
+			if y < min_y && y > std::f64::NEG_INFINITY {min_y = y;}
 			graph.push( GraphNode{neighbours: [north, east, south, west], x:x, y:y, shortest_path: shortest_path, cost: cost} );
 		}
 		else {

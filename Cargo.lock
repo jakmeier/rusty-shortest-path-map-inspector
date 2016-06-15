@@ -1,6 +1,6 @@
 [root]
 name = "jkm_map_inspector"
-version = "1.0.1"
+version = "1.0.2"
 dependencies = [
  "piston_window 0.41.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
